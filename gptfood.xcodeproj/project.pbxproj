@@ -8,12 +8,15 @@
 
 /* Begin PBXBuildFile section */
 		BD6CDB1E2A421FA4005571D8 /* gptfoodApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD6CDB1D2A421FA4005571D8 /* gptfoodApp.swift */; };
-		BD6CDB202A421FA4005571D8 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD6CDB1F2A421FA4005571D8 /* ContentView.swift */; };
+		BD6CDB202A421FA4005571D8 /* IngredientListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD6CDB1F2A421FA4005571D8 /* IngredientListView.swift */; };
 		BD6CDB222A421FA5005571D8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BD6CDB212A421FA5005571D8 /* Assets.xcassets */; };
 		BD6CDB262A421FA5005571D8 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BD6CDB252A421FA5005571D8 /* Preview Assets.xcassets */; };
 		BD6CDB302A421FA5005571D8 /* gptfoodTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD6CDB2F2A421FA5005571D8 /* gptfoodTests.swift */; };
 		BD6CDB3A2A421FA5005571D8 /* gptfoodUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD6CDB392A421FA5005571D8 /* gptfoodUITests.swift */; };
 		BD6CDB3C2A421FA5005571D8 /* gptfoodUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD6CDB3B2A421FA5005571D8 /* gptfoodUITestsLaunchTests.swift */; };
+		BD6CDB492A4280F3005571D8 /* RecipeListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD6CDB482A4280F3005571D8 /* RecipeListView.swift */; };
+		BD6CDB4B2A4281B6005571D8 /* Service.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD6CDB4A2A4281B6005571D8 /* Service.swift */; };
+		BD6CDB4D2A428496005571D8 /* Util.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD6CDB4C2A428496005571D8 /* Util.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,7 +39,7 @@
 /* Begin PBXFileReference section */
 		BD6CDB1A2A421FA4005571D8 /* gptfood.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = gptfood.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BD6CDB1D2A421FA4005571D8 /* gptfoodApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = gptfoodApp.swift; sourceTree = "<group>"; };
-		BD6CDB1F2A421FA4005571D8 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		BD6CDB1F2A421FA4005571D8 /* IngredientListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngredientListView.swift; sourceTree = "<group>"; };
 		BD6CDB212A421FA5005571D8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		BD6CDB232A421FA5005571D8 /* gptfood.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = gptfood.entitlements; sourceTree = "<group>"; };
 		BD6CDB252A421FA5005571D8 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
@@ -45,6 +48,9 @@
 		BD6CDB352A421FA5005571D8 /* gptfoodUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = gptfoodUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BD6CDB392A421FA5005571D8 /* gptfoodUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = gptfoodUITests.swift; sourceTree = "<group>"; };
 		BD6CDB3B2A421FA5005571D8 /* gptfoodUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = gptfoodUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		BD6CDB482A4280F3005571D8 /* RecipeListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeListView.swift; sourceTree = "<group>"; };
+		BD6CDB4A2A4281B6005571D8 /* Service.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Service.swift; sourceTree = "<group>"; };
+		BD6CDB4C2A428496005571D8 /* Util.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Util.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,8 +101,11 @@
 		BD6CDB1C2A421FA4005571D8 /* gptfood */ = {
 			isa = PBXGroup;
 			children = (
+				BD6CDB4C2A428496005571D8 /* Util.swift */,
+				BD6CDB4A2A4281B6005571D8 /* Service.swift */,
+				BD6CDB482A4280F3005571D8 /* RecipeListView.swift */,
+				BD6CDB1F2A421FA4005571D8 /* IngredientListView.swift */,
 				BD6CDB1D2A421FA4005571D8 /* gptfoodApp.swift */,
-				BD6CDB1F2A421FA4005571D8 /* ContentView.swift */,
 				BD6CDB212A421FA5005571D8 /* Assets.xcassets */,
 				BD6CDB232A421FA5005571D8 /* gptfood.entitlements */,
 				BD6CDB242A421FA5005571D8 /* Preview Content */,
@@ -259,7 +268,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BD6CDB202A421FA4005571D8 /* ContentView.swift in Sources */,
+				BD6CDB492A4280F3005571D8 /* RecipeListView.swift in Sources */,
+				BD6CDB4B2A4281B6005571D8 /* Service.swift in Sources */,
+				BD6CDB202A421FA4005571D8 /* IngredientListView.swift in Sources */,
+				BD6CDB4D2A428496005571D8 /* Util.swift in Sources */,
 				BD6CDB1E2A421FA4005571D8 /* gptfoodApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -415,6 +427,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"gptfood/Preview Content\"";
+				DEVELOPMENT_TEAM = GF2QC9NR78;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -451,6 +464,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"gptfood/Preview Content\"";
+				DEVELOPMENT_TEAM = GF2QC9NR78;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;

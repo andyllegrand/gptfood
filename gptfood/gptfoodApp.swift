@@ -9,9 +9,13 @@ import SwiftUI
 
 @main
 struct gptfoodApp: App {
+    //  create 1 service instance for entire app
+    @StateObject private var sharedService = Service()
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            RecipeListView()
+                .environmentObject(sharedService)
         }
     }
 }
