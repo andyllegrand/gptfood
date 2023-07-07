@@ -1,0 +1,7 @@
+Write 5 recipe ideas which can be made from a subset of the following ingredients (just include the recipe name, no directions). Return each recipe enclosed in brackets eg {recipe}
+
+Ingredients:
+[ingredients]
+
+Recipes:
+[insert]
