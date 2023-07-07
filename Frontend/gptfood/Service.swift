@@ -16,8 +16,16 @@ class Service: ObservableObject {
     private var config: Settings
     
     init() {
+        let decoder = JSONDecoder()
+        let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        
         //  Pull settings from json
+        let settingsPath = documentsPath.appendingPathComponent("settings.json")
         config = Settings(server_ip: "http://192.168.1.27")
+
+        
+        //  Pull previous recipes and ingredients from json
+        
         
         ingredients = []
         recipes = []
