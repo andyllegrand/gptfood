@@ -1,6 +1,7 @@
 from flask import Flask, request
-import openai
+import json
 
+import classDefinitions
 import requestHandler
 
 app = Flask(__name__)
@@ -8,6 +9,18 @@ app = Flask(__name__)
 """
 Basic backend that calls openai api to generate recipes given ingredients.
 """
+# Parse json to list of ingredients
+def parseToIngredients(data_list):
+    print(data_list)
+    ingredients = [ingredient.fromDict(data) for data in data_list]
+    return ingredients
+
+# Parse list of recipes to json
+def rlListToJson(recipe_list):
+    dl = []
+    for recipe in recipe_list:
+        dl.append(recipe.toDict())
+    return json.dumps(dl)
 
 @app.route('/genRecipe', methods=['GET'])
 def genRecipes():
@@ -21,15 +34,13 @@ def recipe():
         return 'hi'
     
     # Get ingredients from request
-    ingredients = requestHandler.parseToIngredients(request.get_json())
+    ingredients = parseToIngredients(request.get_json())
 
     # Get recipes from ingredients
     recipes = requestHandler.getRecipes(ingredients)
 
     # Encode recipes as json
     json = requestHandler.rlStringToJson(recipes)
-
-    print(json)
 
     return json
 

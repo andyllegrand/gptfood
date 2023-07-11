@@ -1,8 +1,14 @@
 import re
 import json
 import openai
+import sqlite3
+
+RECIPES_PER_REQUEST = 5
 
 debug = False
+
+conn = sqlite3.connect('my_database.db')
+cursor = conn.cursor()
 
 class ingredient:
     def __init__(self, name):
@@ -44,7 +50,11 @@ def rlListToJson(recipe_list):
         dl.append(recipe.toDict())
     return json.dumps(dl)
 
-def getRecipes(ingredients):
+def addRecipesToDatabase(recipes, cursor):
+    return
+
+# Use openai to generate recipes
+def genRecipes(ingredients):
     # Form list of ingredients in string form
     ingredient_string = ''
     for ingredient in ingredients:
@@ -53,8 +63,6 @@ def getRecipes(ingredients):
     # Form proompt
     proompt = open('proomps/genRecipeList', 'r').read()
     proompt = proompt.replace('[ingredients]', ingredient_string)
-    
-    print(proompt)
 
     # Call openai api
     openai.api_key = open('key.txt', 'r').read()
@@ -75,7 +83,29 @@ def getRecipes(ingredients):
     else:
         response = ['{r1}{r2}{r3}']
 
-    return response
+    # Extract recipes
+
+    # Add recipes to database
+
+def queryDatabase(ingredients):
+    return []
+
+"""
+inputs a list of string representing available ingredients. First looks at cached 
+recipes, then calls openai to generate recipes. Returns a list of recipes.
+"""
+def getRecipes(ingredients, used_recipes=[]):
+    # Query database for recipes
+    recipes = queryDatabase(ingredients)
+
+    # If no recipes found, generate more recipes and try again
+    if len(recipes) < RECIPES_PER_REQUEST:
+        genRecipes(ingredients, cursor)
+        recipes = queryDatabase(ingredients)
+
+    # Return recipes
+    return recipes
+    
 
 if __name__ == '__main__':
     with open('test.json', 'r') as f:
