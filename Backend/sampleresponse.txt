@@ -1,0 +1,12 @@
+[
+    {
+        "name" : "Garlic Olive Oil Pasta",
+        "ingredients": ["Salt", "Pepper", "Garlic (fresh or powder)", "Olive Oil", "Pasta"],
+        "directions": "In a large pot, boil the pasta in salted water. Once cooked, drain and set aside. In a large saucepan, heat olive oil and garlic. Once fragrant, add the cooked pasta and mix well. Add salt and pepper to taste. Enjoy!"
+    },
+    {
+        "name" : "Butter Onions Rice",
+        "ingredients": ["Salt", "Pepper", "Onions", "Butter", "Rice"],
+        "directions": "In a large pan, melt butter and add the onions. Cook until lightly browned. Add the rice and mix well. Add enough water to cover the rice and bring to a boil. Reduce heat to low, cover and cook until all the liquid has been absorbed. Add salt and pepper to taste. Enjoy!"
+    }
+]
