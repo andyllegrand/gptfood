@@ -2,11 +2,12 @@ import unittest
 import sqlite3
 import json
 import logging
+import os
 
-import requestHandler2
+import requestHandler
 from resetdb import resetdb
 
-DATABASE_PATH = 'test_recipes.db'
+DATABASE_PATH = 'tests/test_recipes.db'
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -44,7 +45,7 @@ class requestHandler(unittest.TestCase):
       connection = sqlite3.connect(DATABASE_PATH)
       cursor = connection.cursor()
       for recipe in recipes:
-        requestHandler2.addRecipeToDatabase(recipe["name"], recipe["ingredients"], connection)
+        requestHandler.addRecipeToDatabase(recipe["name"], recipe["ingredients"], connection)
       logging.debug("Done")
 
       # check that recipes were added to the database
@@ -89,33 +90,33 @@ class requestHandler(unittest.TestCase):
 
       # query with no ingredients. Should retrurn no recipes.
       expectedRes = []
-      res = requestHandler2.queryDatabaseRecipes([], [], connection)
+      res = requestHandler.queryDatabaseRecipes([], [], connection)
       self.assertEqual(sorted(expectedRes), sorted(res))
 
       # query with ingredients for recipe 1. Should only return recipe 1.
       expectedRes = ["Recipe 1"]
-      res = requestHandler2.queryDatabaseRecipes(["ingredient 1", "ingredient 2"], [], connection)
+      res = requestHandler.queryDatabaseRecipes(["ingredient 1", "ingredient 2"], [], connection)
       self.assertEqual(sorted(expectedRes), sorted(res))
 
       # query with ingredients for recipe 2. Should return recipe 1 and 2.
       expectedRes = ["Recipe 1", "Recipe 2"]
-      res = requestHandler2.queryDatabaseRecipes(["ingredient 1", "ingredient 2", "ingredient 3"], [], connection)
+      res = requestHandler.queryDatabaseRecipes(["ingredient 1", "ingredient 2", "ingredient 3"], [], connection)
       self.assertEqual(sorted(expectedRes), sorted(res))
 
       # query with ingredients for recipe 3. Should return recipe 3.
       expectedRes = ["Recipe 3"]
-      res = requestHandler2.queryDatabaseRecipes(["ingredient 3", "ingredient 4"], [], connection)
+      res = requestHandler.queryDatabaseRecipes(["ingredient 3", "ingredient 4"], [], connection)
       self.assertEqual(sorted(expectedRes), sorted(res))
 
       # query for all ingredients. Should return recipes 1 2 and 3.
       expectedRes = ["Recipe 1", "Recipe 2","Recipe 3"]
-      res = requestHandler2.queryDatabaseRecipes(["ingredient 1", "ingredient 2", "ingredient 3", "ingredient 4"], [], connection)
+      res = requestHandler.queryDatabaseRecipes(["ingredient 1", "ingredient 2", "ingredient 3", "ingredient 4"], [], connection)
       self.assertEqual(sorted(expectedRes), sorted(res))
 
       # query for ingredients for recipe 1 and 2, but mark 1 as used. Should return recipe 2.
       usedRecipes = ["Recipe 1"]
       expectedRes = ["Recipe 2"]
-      res = requestHandler2.queryDatabaseRecipes(["ingredient 1", "ingredient 2", "ingredient 3"], usedRecipes, connection)
+      res = requestHandler.queryDatabaseRecipes(["ingredient 1", "ingredient 2", "ingredient 3"], usedRecipes, connection)
       self.assertEqual(sorted(expectedRes), sorted(res))
 
     # makes sure the api call to gpt-3 is working. The main issue here is the response not being in proper json format, so run 5 times to make sure it works.
@@ -131,8 +132,10 @@ class requestHandler(unittest.TestCase):
       ]
       usedRecipes = []
 
+      logging.debug("path: " + os.getcwd())
+
       for i in range(5):
-        res = requestHandler2.genRecipesApiCall(ingredients, usedRecipes)
+        res = requestHandler.genRecipesApiCall(ingredients, usedRecipes, proomptPath="./proomps/genRecipeList.txt")
         logging.debug("res: ")
         logging.debug(res)
 
@@ -168,13 +171,11 @@ class requestHandler(unittest.TestCase):
       ]
       usedRecipes = []
 
-      connection = sqlite3.connect(DATABASE_PATH)
-
       # reset database
       resetdb(DATABASE_PATH)
 
       # call generate recipes. This should call gpt and generate 5 new recipes
-      response = requestHandler2.getRecipes(ingredients, usedRecipes, DATABASE_PATH)
+      response = requestHandler.getRecipes(ingredients, usedRecipes, DATABASE_PATH)
 
       logging.debug("response: ")
       logging.debug(response)
@@ -183,12 +184,12 @@ class requestHandler(unittest.TestCase):
       self.assertEqual(len(response), 5)
 
       # make the same call again. This should return the same 5 recipes
-      response2 = requestHandler2.getRecipes(ingredients, usedRecipes, DATABASE_PATH)
+      response2 = requestHandler.getRecipes(ingredients, usedRecipes, DATABASE_PATH)
       self.assertEqual(sorted(response), sorted(response2))
 
       # mark the first recipe as used, and call again. This should return 4 recipes from the original 5 and 1 new recipe
       usedRecipes = [response[0]]
-      response3 = requestHandler2.getRecipes(ingredients, usedRecipes, DATABASE_PATH)
+      response3 = requestHandler.getRecipes(ingredients, usedRecipes, DATABASE_PATH)
       self.assertEqual(len(response3), 5)
 
       shared_recipes = 0
@@ -196,6 +197,64 @@ class requestHandler(unittest.TestCase):
         if recipe in response3:
           shared_recipes += 1
       self.assertEqual(shared_recipes, 4)
+
+    def test_imageSaving(self):
+      image_url = "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"
+      requestHandler.downloadImage(image_url, "tests/images/test.png")
+      self.assertTrue(os.path.exists("tests/images/test.png"))
+
+    def test_imageGenerationAndSaving(self):
+      description = "Yeti eating ice cream on a boat in Antarctica."
+
+      # call api
+      response = requestHandler.genImageApiCall(description)
+
+      # make sure that response is a valid url
+      self.assertTrue(response.startswith("https://"))
+
+      # save image
+      requestHandler.downloadImage(response, "tests/images/test2.png")
+
+      # make sure image was saved
+      self.assertTrue(os.path.exists("tests/images/test2.png"))
+
+    def test_addDirectionsToDb(self):
+      # reset database
+      resetdb(DATABASE_PATH)
+
+      # add a recipe to the database
+      connection = sqlite3.connect(DATABASE_PATH)
+      cursor = connection.cursor()
+      requestHandler.addRecipeToDatabase("test recipe", ["ingredient 1", "ingredient 2"], connection)
+
+      # add directions and image for this recipe
+      requestHandler.addDirectionsToDatabase("test recipe", "test directions", "tests/images/test.png", connection)
+
+      # check that the directions and image were added to the database
+      cursor.execute('SELECT directions, imagePath FROM recipes WHERE name = "test recipe"')
+      directions, image_path = cursor.fetchone()
+      self.assertEqual(directions, "test directions")
+    
+    def testRecipeAndImageGeneration(self):
+      # reset database
+      resetdb(DATABASE_PATH)
+
+      # add a recipe to the database
+      connection = sqlite3.connect(DATABASE_PATH)
+      cursor = connection.cursor()
+      requestHandler.addRecipeToDatabase("pizza", ["crust", "sauce", "cheese"], connection)
+
+      # generate directions and image for this recipe
+      requestHandler.generateAndAddDirections("pizza", connection, "tests/images/")
+
+      # check that the directions and image were added to the database
+      cursor.execute('SELECT directions, imagePath FROM recipes WHERE name = "pizza"')
+      directions, image_path = cursor.fetchone()
+      self.assertTrue(directions != "")
+      self.assertTrue(os.path.exists(image_path))
+
+      
+    
 
       
 

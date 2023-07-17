@@ -12,7 +12,8 @@ def resetdb(path):
       CREATE TABLE recipes (
           id INTEGER PRIMARY KEY,
           name TEXT NOT NULL UNIQUE,
-          directions TEXT
+          directions TEXT,
+          imagePath TEXT UNIQUE
       );
   """)
 
@@ -38,5 +39,5 @@ def resetdb(path):
   print("done")
 
 
-if __name__ == "main":
+if __name__ == "__main__":
   resetdb("recipes.db")

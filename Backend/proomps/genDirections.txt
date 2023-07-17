@@ -1,0 +1,7 @@
+Write a directions for the following recipe. Try to use just the availabale ingredients, but you may use other common ingredients (eg flour, milk). Try to not include specific numbers, instead reference events (eg cook until golden brown). After writing the directions, generate a prompt for dall-e for what the completed dish would look like. Write the response in the following format {"directions":  "example", "dall-e prompt": "example"}
+
+Dish name: 
+[recipe]
+
+Ingredients:
+[ingredients]

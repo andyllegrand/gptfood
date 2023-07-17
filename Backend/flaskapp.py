@@ -21,10 +21,14 @@ def rlListToJson(recipe_list):
       dl.append(recipe.toDict())
   return json.dumps(dl)
 
-@app.route('/genRecipe', methods=['GET'])
+@app.route('/genRecipe', methods=['GET, POST'])
 def genRecipes():
-  data = request.args.get_json()
-  return 'Hello, World!'
+  # Handle generic get request
+  if request.method == 'GET':
+      return 'slatt'
+
+  # Get recipe name from request
+  recipe_name = request.get_json()
 
 @app.route('/recipe', methods=['GET', 'POST'])
 def recipe():
@@ -32,22 +36,25 @@ def recipe():
     if request.method == 'GET':
         return 'hi'
     
-    # Get ingredients from request
-    ingredients = parseToIngredients(request.get_json())
+    try: 
+      # Get ingredients from request
+      ingredients = parseToIngredients(request.get_json())
 
-    # Parse ingredients to list of strings
-    ingredients = [ingredient.name for ingredient in ingredients]
+      # Parse ingredients to list of strings
+      ingredients = [ingredient.name for ingredient in ingredients]
 
-    # Get recipes from ingredients
-    recipes = requestHandler.getRecipes(ingredients)
+      # Get recipes from ingredients
+      recipes,code = requestHandler.getRecipes(ingredients)
 
-    # Form list of recipes from strings
-    recipes = [recipe(data) for data in recipes]
+      # Form list of recipes from strings
+      recipes = [recipe(data) for data in recipes]
 
-    # Encode recipes as json
-    json = requestHandler.rlStringToJson(recipes)
+      # Encode recipes as json
+      json = requestHandler.rlStringToJson(recipes)
 
-    return json
+      return json
+    except:
+       return json, 
 
 if __name__ == '__main__':
     app.run()
