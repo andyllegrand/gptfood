@@ -7,11 +7,14 @@
 
 import Foundation
 
+let debug_no_request : Bool = true
+
 //  Stores state for the entire app. Manages calls to backend
 class Service: ObservableObject {
     @Published public private(set) var ingredients: [Ingredient]
     @Published public private(set) var recipes: [Recipe]
     @Published public private(set) var loading_recipes: Bool
+    @Published public private(set) var error: String?
     
     private var config: Settings
     
@@ -22,26 +25,36 @@ class Service: ObservableObject {
         //  Pull settings from json
         let settingsPath = documentsPath.appendingPathComponent("settings.json")
         config = Settings(server_ip: "http://192.168.1.27")
-
-        
-        //  Pull previous recipes and ingredients from json
-        
         
         ingredients = []
         recipes = []
         loading_recipes = false
+        
+        loadData()
+        
+        //  check directions file
+        
     }
     
     //  Sets the ingredients list to a new list
     func addIngredient(new_ingredient: Ingredient) {
         ingredients.append(new_ingredient)
+        saveData()
     }
     
     func removeIngredient(at index: Int) {
         ingredients.remove(at: index)
+        saveData()
     }
     
     func updateRecipes() {
+        //  Check debugdat
+        if debug_no_request {
+            recipes.append(Recipe(name: "test"))
+            saveData()
+            return
+        }
+        
         //  Encode ingredients list into JSON
         guard let postData = try? JSONEncoder().encode(ingredients) else {
             print("Failed to encode ingredients to JSON")
@@ -49,7 +62,7 @@ class Service: ObservableObject {
         }
         
         //  Build request
-        let url = URL(string: (config.server_ip + "/recipe"))!
+        let url = URL(string: (config.server_ip + "/recipeList"))!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.httpBody = postData
@@ -86,5 +99,68 @@ class Service: ObservableObject {
             }
         }
         task.resume()
+        
+        saveData()
+    }
+    
+    func getDocumentsDirectory() -> URL {
+        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        return paths[0]
+    }
+    
+    func saveData() {
+        print("saving data")
+        
+        let encoder = JSONEncoder()
+            if let encodedIngredients = try? encoder.encode(ingredients) {
+                let ingredientsUrl = getDocumentsDirectory().appendingPathComponent("ingredients.json")
+                try? encodedIngredients.write(to: ingredientsUrl)
+            }
+
+            if let encodedRecipes = try? encoder.encode(recipes) {
+                let recipesUrl = getDocumentsDirectory().appendingPathComponent("recipes.json")
+                try? encodedRecipes.write(to: recipesUrl)
+            }
+        
+        print("done")
+    }
+
+    func loadData() {
+        print("loading data")
+        
+        let decoder = JSONDecoder()
+
+        let ingredientsUrl = getDocumentsDirectory().appendingPathComponent("ingredients.json")
+        if let data = try? Data(contentsOf: ingredientsUrl),
+           let decodedIngredients = try? decoder.decode([Ingredient].self, from: data) {
+            ingredients = decodedIngredients
+        }
+
+        let recipesUrl = getDocumentsDirectory().appendingPathComponent("recipes.json")
+        if let data = try? Data(contentsOf: recipesUrl),
+           let decodedRecipes = try? decoder.decode([Recipe].self, from: data) {
+            recipes = decodedRecipes
+        }
+        
+        print("done")
+    }
+    
+    func clearDirectionsFile() {
+        
+    }
+    
+    func queryBackEndForDirections(recipeName: String) {
+        
+    }
+    
+    func queryBackEndForImage(recipeName: String) {
+        
+    }
+    
+    func loadRecipeDirections(recipeName: String) {
+        //  check file. If matching recipe found do nothing
+        
+        //  add directions and image to file by querying the backend
+        
     }
 }

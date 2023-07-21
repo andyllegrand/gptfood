@@ -1,4 +1,4 @@
-Write 5 recipe ideas which can be made from a subset of the following ingredients. Format the response as a json with the fields name (title of the recipe) ingredients (list of used ingredients). Leave " marks around the field names. Enclose the recipes with []. Exclude similar recipes to recipes in the used recipe list.
+Write exactly 5 recipe ideas which can be made from a subset of the following ingredients. Format the response as a json with the fields name (title of the recipe) ingredients (list of used ingredients). Leave " marks around the field names. Enclose the recipes with []. Exclude similar recipes to recipes in the used recipe list.
 
 Used Recipes:
 [used]

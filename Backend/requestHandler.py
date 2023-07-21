@@ -5,18 +5,24 @@ import random
 import requests
 import logging
 
-RECIPES_PER_REQUEST = 5
-IMAGE_DIR = 'images/'
+from customError import CustomError
 
-debug = False
+RECIPES_PER_REQUEST = 5
+IMAGE_DIR = '/Users/andylegrand/xcode/gptfood/Backend/tests/images/'
+
+debug = True  # if set to true the backend will not call the openai api and will instead return example responses
+
+errorCodes = json.loads(open('errorCodes.json', 'r').read())
 
 def genRecipesApiCall(ingredients, usedRecipes, proomptPath='proomps/genRecipeList.txt'):
   """
   Calls openai api to generate recipes given ingredients.
   @param ingredients: list of ingredients representing available ingredients
   @param usedRecipes: list of recipes representing recipes that have already been used
+  @raise CustomError: if the response from the api is not valid json
   @return: extracted text from response
   """
+
   # Form list of ingredients in string form
   ingredient_string = ''
   for ingredient in ingredients:
@@ -33,19 +39,27 @@ def genRecipesApiCall(ingredients, usedRecipes, proomptPath='proomps/genRecipeLi
   proompt = proompt.replace('[used]', used_recipe_string)
 
   # Call openai api
-  openai.api_key = open('key.txt', 'r').read()
+  openai.api_key = open('/Users/andylegrand/xcode/gptfood/Backend/key.txt', 'r').read()
+  logging.debug("key: " + openai.api_key)
 
-  response = openai.Completion.create(
-    model="text-davinci-003",
-    prompt=proompt,
-    temperature=1,
-    max_tokens=2339,
-    top_p=1,
-    frequency_penalty=0,
-    presence_penalty=0
-  )
+  try:
+    response = openai.Completion.create(
+      model="text-davinci-003",
+      prompt=proompt,
+      temperature=1,
+      max_tokens=1024,
+      top_p=1,
+      frequency_penalty=0,
+      presence_penalty=0
+    )
 
-  return response.choices[0].text
+    assert response.choices[0].text != None
+    
+    logging.debug(f"APIResponse: {response.choices[0].text}")
+
+    return response.choices[0].text
+  except:
+    raise CustomError(proompt, errorCodes["GPT_API_ERROR"])
   
 def addRecipeToDatabase(recipe, ingredients, connection):
   """
@@ -85,17 +99,21 @@ def generateAndAddRecipes(ingredients, usedRecipes, connection):
   @param ingredients: list of ingredients representing available ingredients
   @param usedRecipes: list of recipes representing recipes that have already been used
   @param connection: connection to the database
+  @raise CustomError: if the response from the api is not valid json
   @return: None
   """
-
   completionText = None
   if not debug:
     completionText = genRecipesApiCall(ingredients, usedRecipes)
   else:
     completionText = open('sampleresponse.txt', 'r').read()
   
-  # Load the text as JSON
-  recipes = json.loads(completionText)
+  # Load the text as JSON, abort and throw an error if it fails
+  try:
+    recipes = json.loads(completionText)
+  except:
+    raise CustomError(f"Error parsing JSON: {completionText}", errorCodes["JSON_PARSE_ERROR"])
+
 
   for recipe in recipes:
     addRecipeToDatabase(recipe["name"], recipe["ingredients"], connection)
@@ -138,6 +156,9 @@ def queryDatabaseRecipes(ingredients, usedRecipes, connection):
     return matching_recipes
 
 def getRecipes(ingredients, usedRecipes, databasePath):
+  if debug:
+    return ["Recipe 1", "Recipe 2", "Recipe 3", "Recipe 4", "Recipe 5"]
+
   # Connect to the database
   conn = sqlite3.connect(databasePath)
 
@@ -245,6 +266,9 @@ def generateAndAddDirections(recipe, connection, imagePath):
   # get recipe id
   cursor.execute('SELECT id FROM recipes WHERE name = ?', (recipe,))
 
+  if cursor.fetchone() == None:
+    raise CustomError(f"Recipe {recipe} not found in database", errorCodes["RECIPE_NOT_FOUND"])
+
   # get ingredients
   cursor.execute('''
     SELECT ingredients.name
@@ -260,11 +284,13 @@ def generateAndAddDirections(recipe, connection, imagePath):
   # Add the directions to the database
   res = genDirectionsApiCall(recipe, ingredients)
 
-  # Convert to json, extract directions and image proompt
-  js = json.loads(res)
-  logging.debug(f"Response: {js}")
-  directions = js["directions"]
-  imageProompt = js["dall-e prompt"]
+  # Convert to json, extract directions and image proompt. Abort and throw an error if it fails
+  try:
+    js = json.loads(res)
+    directions = js["directions"]
+    imageProompt = js["dall-e prompt"]
+  except:
+    raise CustomError(f"Error parsing JSON: {res}", errorCodes["JSON_PARSE_ERROR"])
 
   # Generate image
   imageUrl = genImageApiCall(imageProompt)
@@ -281,6 +307,9 @@ def getDirections(recipe, databasePath):
   @param databasePath: path to the database
   @return: directions for the recipe
   """
+  if debug:
+    return "Directions for " + recipe
+
   # Connect to the database
   conn = sqlite3.connect(databasePath)
   cursor = conn.cursor()
@@ -290,14 +319,14 @@ def getDirections(recipe, databasePath):
   directions = cursor.fetchone()[0]
 
   if directions == None:
-    generateAndAddDirections(recipe, conn)
+    generateAndAddDirections(recipe, conn, IMAGE_DIR)
     cursor.execute('SELECT directions FROM recipes WHERE name = ?', (recipe,))
     directions = cursor.fetchone()[0]
 
   conn.close()
   return directions
 
-# TODO
+
 def getImage(recipe, databasePath):
   """
   Returns path to the image for the recipe. This function should be called after getDirections, so the image should already be generated.
@@ -305,6 +334,9 @@ def getImage(recipe, databasePath):
   @param databasePath: path to the database
   @return: path to the image
   """
+  if debug:
+     return "/Users/andylegrand/xcode/gptfood/Backend/exampleResponses/exampleImage.png"
+
   # Connect to the database
   conn = sqlite3.connect(databasePath)
   cursor = conn.cursor()
@@ -312,10 +344,8 @@ def getImage(recipe, databasePath):
   # Check if recipe has directions
   cursor.execute('SELECT imagePath FROM recipes WHERE name = ?', (recipe,))
   imagePath = cursor.fetchone()[0]
-  assert imagePath != None
+  if imagePath == None:
+    raise CustomError(f"Image for {recipe} not found in database", errorCodes["IMAGE_NOT_FOUND"])
 
   conn.close()
   return imagePath
-
-if __name__ == '__main__':
-  print(genImageApiCall("a picture of a cat"))

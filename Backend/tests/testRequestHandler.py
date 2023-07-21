@@ -11,7 +11,7 @@ DATABASE_PATH = 'tests/test_recipes.db'
 
 logging.basicConfig(level=logging.DEBUG)
 
-class requestHandler(unittest.TestCase):
+class testRequestHandler(unittest.TestCase):
     def test_recipeDatabase(self):
       recipes = [
          #  recipe with 2 ingredients

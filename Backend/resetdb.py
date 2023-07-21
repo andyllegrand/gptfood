@@ -40,4 +40,4 @@ def resetdb(path):
 
 
 if __name__ == "__main__":
-  resetdb("recipes.db")
+  resetdb("/Users/andylegrand/xcode/gptfood/Backend/recipes.db")

@@ -24,7 +24,7 @@ struct Ingredient: Identifiable, Codable {
 }
 
 //  Recipe recieved from backend.
-struct Recipe: Identifiable, Decodable {
+struct Recipe: Identifiable, Codable {
     let id: UUID
     let name: String
 

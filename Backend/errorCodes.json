@@ -1,6 +1,8 @@
 {
-  "flaskApp": 2,
-  "gptapi": 3,
-  "jsonParsing": 4,
-  "recipeDoesNotExist": 5
+  "SUCCESS": 200,
+  "FLASK_APP": 500,
+  "GPT_API_ERROR": 501,
+  "JSON_PARSE_ERROR": 502,
+  "RECIPE_DOES_NOT_EXIST": 503,
+  "IMAGE_DOES_NOT_EXIST": 504
 }

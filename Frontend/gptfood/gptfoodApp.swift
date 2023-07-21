@@ -7,9 +7,11 @@
 
 import SwiftUI
 
+
 @main
 struct gptfoodApp: App {
-    //  create 1 service instance for entire app
+    //@UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+
     @StateObject private var sharedService = Service()
     
     var body: some Scene {
